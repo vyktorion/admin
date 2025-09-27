@@ -30,6 +30,9 @@ import { Button } from "./ui/button";
 import { Textarea } from "./ui/textarea";
 import { Checkbox } from "./ui/checkbox";
 import { ScrollArea } from "./ui/scroll-area";
+import CustomUploadButton from "./UploadButton";
+import { useState } from "react";
+import Image from "next/image";
 
 const categories = [
   "T-shirts",
@@ -97,6 +100,50 @@ const AddProduct = () => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
   });
+
+  const [uploadedImages, setUploadedImages] = useState<Record<string, string>>({});
+  const selectedColors = form.watch("colors") || [];
+
+  const handleImageUpload = (color: string, files: any[]) => {
+    if (files && files[0]) {
+      setUploadedImages(prev => ({
+        ...prev,
+        [color]: files[0].url
+      }));
+      
+      // Update form with new images
+      const currentImages = form.getValues("images") || {};
+      form.setValue("images", {
+        ...currentImages,
+        [color]: files[0].url
+      });
+    }
+  };
+
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    try {
+      const response = await fetch('/api/products', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(values),
+      });
+
+      if (response.ok) {
+        form.reset();
+        setUploadedImages({});
+        // You can add a success toast here
+        console.log('Product created successfully');
+      } else {
+        const error = await response.json();
+        console.error('Error creating product:', error);
+      }
+    } catch (error) {
+      console.error('Error creating product:', error);
+    }
+  };
+
   return (
     <SheetContent>
       <ScrollArea className="h-screen">
@@ -104,7 +151,7 @@ const AddProduct = () => {
           <SheetTitle className="mb-4">Add Product</SheetTitle>
           <SheetDescription asChild>
             <Form {...form}>
-              <form className="space-y-8">
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
                 <FormField
                   control={form.control}
                   name="name"
@@ -279,13 +326,48 @@ const AddProduct = () => {
                             <div className="mt-8 space-y-4">
                               <p className="text-sm font-medium">Upload images for selected colors:</p>
                               {field.value.map((color) => (
-                                <div className="flex items-center gap-2" key={color}>
+                                <div className="space-y-2" key={color}>
+                                  <div className="flex items-center gap-2">
                                   <div
                                     className="w-2 h-2 rounded-full"
                                     style={{ backgroundColor: color }}
                                   />
                                   <span className="text-sm min-w-[60px]">{color}</span>
-                                  <Input type="file" accept="image/*" />
+                                  </div>
+                                  {uploadedImages[color] ? (
+                                    <div className="flex items-center gap-2">
+                                      <div className="w-16 h-16 relative rounded-md overflow-hidden">
+                                        <Image
+                                          src={uploadedImages[color]}
+                                          alt={`${color} variant`}
+                                          fill
+                                          className="object-cover"
+                                        />
+                                      </div>
+                                      <Button
+                                        type="button"
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => {
+                                          const newImages = { ...uploadedImages };
+                                          delete newImages[color];
+                                          setUploadedImages(newImages);
+                                          
+                                          const currentImages = form.getValues("images") || {};
+                                          delete currentImages[color];
+                                          form.setValue("images", currentImages);
+                                        }}
+                                      >
+                                        Remove
+                                      </Button>
+                                    </div>
+                                  ) : (
+                                    <CustomUploadButton
+                                      endpoint="imageUploader"
+                                      onClientUploadComplete={(res) => handleImageUpload(color, res)}
+                                      onUploadError={(error) => console.error("Upload error:", error)}
+                                    />
+                                  )}
                                 </div>
                               ))}
                             </div>
