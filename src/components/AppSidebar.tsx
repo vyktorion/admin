@@ -1,16 +1,4 @@
-import {
-  Home,
-  Inbox,
-  Calendar,
-  Search,
-  Settings,
-  User2,
-  ChevronUp,
-  Plus,
-  Shirt,
-  User,
-  ShoppingBasket,
-} from "lucide-react";
+import { Chrome as Home, Inbox, Calendar, Search, Settings, User as User2, ChevronUp, Plus, Shirt, User, ShoppingBasket } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
