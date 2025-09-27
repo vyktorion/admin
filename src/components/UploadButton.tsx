@@ -1,7 +1,7 @@
 "use client";
 
-import { UploadButton } from "@uploadthing/react";
-import { OurFileRouter } from "@/lib/uploadthing";
+import { UploadButton as UTUploadButton } from "@uploadthing/react";
+import { OurFileRouter } from "@/app/api/uploadthing/core";
 
 interface UploadButtonProps {
   endpoint: keyof OurFileRouter;
@@ -17,7 +17,7 @@ export default function CustomUploadButton({
   className
 }: UploadButtonProps) {
   return (
-    <UploadButton<OurFileRouter, typeof endpoint>
+    <UTUploadButton<OurFileRouter, typeof endpoint>
       endpoint={endpoint}
       onClientUploadComplete={onClientUploadComplete}
       onUploadError={onUploadError}
@@ -25,5 +25,4 @@ export default function CustomUploadButton({
     />
   );
 }
-  )
 }

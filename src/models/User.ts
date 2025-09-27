@@ -1,42 +1,3 @@
-<<<<<<< HEAD
-import mongoose from 'mongoose';
-
-const UserSchema = new mongoose.Schema({
-  username: {
-    type: String,
-    required: true,
-    unique: true,
-  },
-  email: {
-    type: String,
-    required: true,
-    unique: true,
-  },
-  password: {
-    type: String,
-    required: true,
-  },
-  img: {
-    type: String,
-  },
-  isAdmin: {
-    type: Boolean,
-    default: false,
-  },
-  isActive: {
-    type: Boolean,
-    default: true,
-  },
-  phone: {
-    type: String,
-  },
-  address: {
-    type: String,
-  },
-}, { timestamps: true });
-
-export default mongoose.models.User || mongoose.model('User', UserSchema);
-=======
 import mongoose, { Document, Schema } from 'mongoose';
 
 export interface IUser extends Document {
@@ -92,4 +53,3 @@ const UserSchema = new Schema<IUser>({
 });
 
 export default mongoose.models.User || mongoose.model<IUser>('User', UserSchema);
->>>>>>> 56221ebd398ad3233d9941407638a6c456af7347
