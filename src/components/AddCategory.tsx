@@ -29,13 +29,37 @@ const AddCategory = () => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
   });
+
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    try {
+      const response = await fetch('/api/categories', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ title: values.name }),
+      });
+
+      if (response.ok) {
+        form.reset();
+        console.log('Category created successfully');
+        // You can add a success toast here
+      } else {
+        const error = await response.json();
+        console.error('Error creating category:', error);
+      }
+    } catch (error) {
+      console.error('Error creating category:', error);
+    }
+  };
+
   return (
     <SheetContent>
       <SheetHeader>
         <SheetTitle className="mb-4">Add Category</SheetTitle>
         <SheetDescription asChild>
           <Form {...form}>
-            <form className="space-y-8">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
               <FormField
                 control={form.control}
                 name="name"

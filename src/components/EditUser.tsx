@@ -50,13 +50,39 @@ const EditUser = () => {
       city: "New York",
     },
   });
+
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    try {
+      // In a real app, you would get the user ID from the URL or context
+      const userId = "728ed521"; // This should be dynamic
+      
+      const response = await fetch(`/api/users/${userId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(values),
+      });
+
+      if (response.ok) {
+        console.log('User updated successfully');
+        // You can add a success toast here
+      } else {
+        const error = await response.json();
+        console.error('Error updating user:', error);
+      }
+    } catch (error) {
+      console.error('Error updating user:', error);
+    }
+  };
+
   return (
     <SheetContent>
       <SheetHeader>
         <SheetTitle className="mb-4">Edit User</SheetTitle>
         <SheetDescription asChild>
           <Form {...form}>
-            <form className="space-y-8">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
               <FormField
                 control={form.control}
                 name="fullName"

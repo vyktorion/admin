@@ -89,7 +89,7 @@ const formSchema = z.object({
     .min(1, { message: "Short description is required!" })
     .max(60),
   description: z.string().min(1, { message: "Description is required!" }),
-  price: z.number().min(1, { message: "Price is required!" }),
+  price: z.string().transform((val) => parseFloat(val)).refine((val) => val > 0, { message: "Price is required!" }),
   category: z.enum(categories),
   sizes: z.array(z.enum(sizes)),
   colors: z.array(z.enum(colors)),
@@ -223,7 +223,7 @@ const AddProduct = () => {
                     <FormItem>
                       <FormLabel>Category</FormLabel>
                       <FormControl>
-                        <Select>
+                        <Select onValueChange={field.onChange} value={field.value}>
                           <SelectTrigger>
                             <SelectValue placeholder="Select a category" />
                           </SelectTrigger>

@@ -48,12 +48,32 @@ export function DataTable<TData, TValue>({
     },
   });
 
-  console.log(rowSelection);
+  const handleDeleteSelected = async () => {
+    const selectedRows = table.getFilteredSelectedRowModel().rows;
+    const selectedIds = selectedRows.map(row => row.original.id);
+    
+    try {
+      // In a real app, you would make API calls to delete the selected payments
+      console.log('Deleting payments:', selectedIds);
+      
+      // Reset selection after deletion
+      setRowSelection({});
+      
+      // You would typically refresh the data here
+      alert(`Deleted ${selectedIds.length} payment(s)`);
+    } catch (error) {
+      console.error('Error deleting payments:', error);
+    }
+  };
+
   return (
     <div className="rounded-md border">
       {Object.keys(rowSelection).length > 0 && (
         <div className="flex justify-end">
-          <button className="flex items-center gap-2 bg-red-500 text-white px-2 py-1 text-sm rounded-md m-4 cursor-pointer">
+          <button 
+            onClick={handleDeleteSelected}
+            className="flex items-center gap-2 bg-red-500 text-white px-2 py-1 text-sm rounded-md m-4 cursor-pointer hover:bg-red-600 transition-colors"
+          >
             <Trash2 className="w-4 h-4"/>
             Delete Payment(s)
           </button>
